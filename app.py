@@ -10,13 +10,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def run_scraper():
-    # --- Seleniumの設定 (ここが重要！) ---
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # サーバー上では画面を出せないので必須
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
     
-    service = Service(ChromeDriverManager().install())
+    # クラウド環境とローカル環境、両方で動くように設定
+    import os
+    if os.path.exists("/usr/bin/chromedriver"):
+        # Streamlit Cloud環境
+        service = Service("/usr/bin/chromedriver")
+    else:
+        # ローカル(Windows/Mac)環境
+        service = Service(ChromeDriverManager().install())
+        
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     job_data = []
